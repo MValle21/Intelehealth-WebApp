@@ -79,6 +79,9 @@ export class NavbarComponent implements OnInit {
         this.setSnoozeTimeout(res["data"].snooze_till);
       }
     });
+    // if (this.swPush.isEnabled) {
+    //   this.notificationService.notificationHandler();
+    // }
   }
 
   logout() {
@@ -208,7 +211,7 @@ export class NavbarComponent implements OnInit {
     }, timeout);
   }
 
-  get snoozeTimeout(){
+  get snoozeTimeout() {
     return this.notificationService.snoozeTimeout;
   }
 }

@@ -96,7 +96,9 @@
             "assets": [
               "src/favicon.ico",
               "src/assets",
-              "src/manifest.webmanifest"
+              "src/manifest.webmanifest",
+              "src/ngsw-worker.js",
+              "src/ngsw.json"
             ]
           }
         },
@@ -143,5 +145,8 @@
       }
     }
   },
-  "defaultProject": "intelehealth-ui"
+  "defaultProject": "intelehealth-ui",
+  "cli": {
+    "analytics": false
+  }
 }

@@ -94,9 +94,9 @@ constructor(private service: EncounterService,
                     provider: response.encounterProviders[0].display
                   }
                 };
-                if(!this.pushNotificationService.snoozeTimeout){
-                  this.pushNotificationService.postNotification(payload).subscribe();
-                }
+                // if(!this.pushNotificationService.snoozeTimeout){
+                //   this.pushNotificationService.postNotification(payload).subscribe();
+                // }
               }
             });
           } else {
