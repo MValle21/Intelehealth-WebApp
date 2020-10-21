@@ -144,4 +144,12 @@ encounterUuid: string;
       }
     } else {this.snackbar.open('Another doctor is viewing this case', null, {duration: 4000}); }
   }
+
+  delete(i) {
+    const visitId = this.route.snapshot.params['visit_id'];
+    this.service.deleteAttribute(visitId, i)
+      .subscribe(res => {
+        this.msg = [];
+      });
+  }
 }
