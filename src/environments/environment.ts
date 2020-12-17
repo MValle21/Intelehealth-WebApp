@@ -4,10 +4,11 @@
 
 export const environment = {
   production: false,
-  baseURL: 'https://afitraining.intelehealth.org/openmrs/ws/rest/v1',
-  baseURLCoreApp : 'https://afitraining.intelehealth.org/openmrs/coreapps/diagnoses',
-  baseURLLegacy: 'https://afitraining.intelehealth.org/openmrs',
-  mindmapURL: 'https://localhost:3004/api'
+  baseURL: 'https://testing.intelehealth.org/openmrs/ws/rest/v1',
+  baseURLCoreApp : 'https://testing.intelehealth.org/openmrs/coreapps/diagnoses',
+  baseURLLegacy: 'https://testing.intelehealth.org/openmrs',
+  mindmapURL: 'https://localhost:3004/api',
+  notificationURL: 'http://localhost:3004/notification'
 };
 
 /*

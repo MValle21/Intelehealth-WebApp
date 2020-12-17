@@ -1,8 +1,13 @@
+import { SessionService } from './services/session.service';
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from './services/auth.service';
 import { UserIdleService } from 'angular-user-idle';
 import * as introJs from 'intro.js/intro.js';
 import { Router } from '@angular/router';
+import { PushNotificationsService } from './services/push-notification.service';
+import { SwPush, SwUpdate } from '@angular/service-worker';
+import { VisitService } from './services/visit.service';
+declare var CheckNewVisit: any, CheckVisitNote: any, getFromStorage: any, saveToStorage: any;
 
 @Component({
   selector: 'app-root',
@@ -11,19 +16,58 @@ import { Router } from '@angular/router';
 })
 export class AppComponent implements OnInit {
   introJS = introJs();
+  specialization;
+  newVisits;
+  visitNote;
   constructor(public authService: AuthService,
               private userIdle: UserIdleService,
-              public router: Router) { }
+              public sessionService: SessionService,
+              // private userIdle: UserIdleService,
+              public router: Router,
+              public visitService: VisitService,
+              public notificationService: PushNotificationsService,
+              public swUpdate: SwUpdate,
+              public swPush: SwPush
+              ) { }
 
+              reloadCache() {
+                if (this.swUpdate.isEnabled) {
+                  this.swUpdate.available.subscribe(() => {
+                    if (confirm('New version available')) {
+                      window.location.reload();
+                    }
+                  });
+                }
+              }
   ngOnInit () {
-    this.userIdle.startWatching();
-    // Start watching when user idle is starting.
-    this.userIdle.onTimerStart().subscribe(count => {
-      if (count === 1) {
-        this.authService.logout();
-        this.userIdle.stopWatching();
-      }
+    // this.userIdle.startWatching();
+    // // Start watching when user idle is starting.
+    // this.userIdle.onTimerStart().subscribe(count => {
+    //   if (count === 1) {
+    //     this.authService.logout();
+    //     this.userIdle.stopWatching();
+    //   }
+    //   });
+    this.reloadCache();
+    const session = getFromStorage('session');
+    const providerDetails = getFromStorage('provider');
+    if (session) {
+      this.sessionService.loginSession(session).subscribe(response => {
+        if (response.authenticated === true) {
+          this.router.navigate(['/home']);
+          this.authService.sendToken(response.sessionId);
+          saveToStorage('user', response.user);
+        }
       });
+    }
+    if (providerDetails) {
+      const attributes = providerDetails.attributes;
+      attributes.forEach(element => {
+        if (element.attributeType.uuid === 'ed1715f5-93e2-404e-b3c9-2a2d9600f062' && !element.voided) {
+          this.specialization = element.value;
+        }
+      });
+    }
   }
 
   receiveMessage() {

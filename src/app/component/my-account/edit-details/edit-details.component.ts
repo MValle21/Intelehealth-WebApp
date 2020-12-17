@@ -3,6 +3,11 @@ import { Component, OnInit, Inject } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
+import { EncounterService } from "src/app/services/encounter.service";
+import { MatDialog } from "@angular/material/dialog";
+import { SignatureComponent } from "../signature/signature.component";
+import { Router } from '@angular/router';
+declare var getFromStorage: any;
 
 
 
@@ -15,28 +20,50 @@ export class EditDetailsComponent implements OnInit {
   baseURL = environment.baseURL;
   baseURLProvider = `${this.baseURL}/provider/${this.data.uuid}/attribute`;
 
+  specializations = [
+    "General Physician"
+  ];
+
   editForm = new FormGroup({
     gender: new FormControl(this.data.person ? this.data.person.gender : null),
     phoneNumber: new FormControl(this.data.phoneNumber ? this.data.phoneNumber.value : null),
     whatsapp: new FormControl(this.data.whatsapp ? this.data.whatsapp.value : null),
     emailId: new FormControl(this.data.emailId ? this.data.emailId.value : null),
     qualification: new FormControl(this.data.qualification ? this.data.qualification.value : null),
-    // specialization: new FormControl(this.data.specialization ? this.data.specialization.value : null),
+    specialization: new FormControl(this.data.specialization ? this.data.specialization.value : null),
     registrationNumber: new FormControl(this.data.registrationNumber ? this.data.registrationNumber.value : null)
   });
+  status = false;
+  name = "Enter text";
+  userDetails: any
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data,
+  constructor(
+    @Inject(MAT_DIALOG_DATA) public data,
     private dialogRef: MatDialogRef<EditDetailsComponent>,
-    private http: HttpClient) { }
+    private http: HttpClient,
+    private dialog: MatDialog,
+    private router: Router
+    ) { }
 
   ngOnInit() {
+    this.userDetails = getFromStorage('user');
   }
 
   onClose() {
     this.dialogRef.close();
   }
 
-
+  editSignature() {
+    var obj = {
+        name: this.data.textOfSign.value,
+        textOfSignuuid: this.data.textOfSign.uuid,
+        font: this.data.fontOfSign.value,
+        fontOfSignuuid:this.data.fontOfSign.uuid,
+        pid: this.data.uuid,
+        type: "edit"
+    }
+    this.dialog.open(SignatureComponent, { width: "500px", data: obj});
+  }
 
   updateDetails() {
     const value = this.editForm.value;
@@ -79,6 +106,7 @@ export class EditDetailsComponent implements OnInit {
         .subscribe(response => { });
     }
 
+   
     if (value.qualification !== null) {
       const URL = this.data.qualification ? `${this.baseURLProvider}/${this.data.qualification.uuid}` : this.baseURLProvider;
       const json = {
@@ -99,16 +127,15 @@ export class EditDetailsComponent implements OnInit {
         .subscribe(response => { });
     }
 
-    // if (value.specialization !== null) {
-    //   const URL = this.data.specialization ? `${this.baseURLProvider}/${this.data.specialization.uuid}` : this.baseURLProvider;
-    //   const json = {
-    //     'attributeType': 'ed1715f5-93e2-404e-b3c9-2a2d9600f062',
-    //     'value': value.specialization
-    //   };
-    //   this.http.post(URL, json)
-    //     .subscribe(response => { });
-    // }
-
+    if (value.specialization !== null) {
+      const URL = this.data.specialization ? `${this.baseURLProvider}/${this.data.specialization.uuid}` : this.baseURLProvider;
+      const json = {
+        'attributeType': 'ed1715f5-93e2-404e-b3c9-2a2d9600f062',
+        'value': value.specialization
+      };
+      this.http.post(URL, json)
+        .subscribe(response => { });
+    }
     setTimeout(() => window.location.reload(), 2000);
   }
 }
